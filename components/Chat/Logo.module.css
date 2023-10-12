@@ -1,0 +1,22 @@
+.heading {
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-image: linear-gradient(
+    to right,
+    #09f1b8,
+    #00a2ff,
+    #ff00d2,
+    #fed90f
+  );
+  background-size: 355px;
+  background-position: center;
+  color: #000112;
+  font-size: 50px;
+  letter-spacing: calc(1em / 9);
+  padding: calc(--stroke-width / 2);
+  -webkit-text-stroke-color: transparent;
+  -webkit-text-stroke-width: calc(1em / 16);
+  line-height: 1;
+  font-family: Poppins, sans-serif;
+  padding-bottom: 5vmin;
+}

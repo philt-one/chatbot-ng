@@ -1,15 +1,6 @@
 version: '3.8'
 
 services:
-  mimic3:
-    image: mycroftai/mimic3
-    ports:
-      - "59125:59125"
-    volumes:
-      - "${HOME}/.local/share/mycroft/mimic3:/home/mimic3/.local/share/mycroft/mimic3"
-    stdin_open: true
-    tty: true
-
   chatgpt:
     build: .
     ports:

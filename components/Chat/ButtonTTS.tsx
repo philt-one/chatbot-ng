@@ -3,57 +3,37 @@ import {
     IconSpeakerphone,
     IconPlayerStop
 } from '@tabler/icons-react';
-
-
-interface UriParams {
-    text: string;
-    voice: string;
-    noiseScale: number;
-    noiseW: number;
-    lengthScale: number;
-    ssml: boolean;
-    audioTarget: string;
-}
-
-// Function to convert parameters to URL search parameters
-function paramsToSearch(params: UriParams): string {
-    return Object.keys(params)
-        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key as keyof UriParams].toString())}`)
-        .join('&');
-}
-
+import { fetchAudioFromOpenAI } from '../../services/useTtsService';
 
 interface ButtonTTSProps {
-    text: string
+    text: string;
+    apiKey: string;
 }
 
 const ButtonTTS: React.FC<ButtonTTSProps> = ({ text }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
 
-    const params: UriParams = {
-        text: text.replace(/\n\n/g, ". ").replace(/\n-/g, ". "),    // Simple fix to pause in-between bulletpoints
-        voice: 'en_US/hifi-tts_low#6097',
-        noiseScale: 0.5,
-        noiseW: 0.5,
-        lengthScale: 1,
-        ssml: false,
-        audioTarget: 'client'
-    };
+    // TODO: Get apiKey from store instead of env file
+    const fetchAndPlayAudioHandler = async () => {
+        const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 
-    const fetchAndPlayAudio = async () => {
-        const baseUrl = 'http://0.0.0.0:59125/api/tts';
-        const url = `${baseUrl}?${paramsToSearch(params)}`;
+        // Check if apiKey is undefined or an empty string
+        if (typeof apiKey === 'undefined' || apiKey === "") {
+            console.error('OPENAI_API_KEY is not set or empty in the environment variables.');
+            return; // Exit the function if apiKey is not valid
+        }
 
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const objectUrl = URL.createObjectURL(blob);
-        const audio = new Audio(objectUrl);
+        fetchAudioFromOpenAI(text, apiKey as string)
+            .then(audio => {
+                if (audio) {
+                    audio!.addEventListener('ended', () => setIsPlaying(false));
+                    setAudio(audio);
+                    audio!.play();
+                    setIsPlaying(true);                }
+            })
+            .catch(error => console.error('Failed to play audio:', error));
 
-        audio.addEventListener('ended', () => setIsPlaying(false));
-        setAudio(audio);
-        audio.play();
-        setIsPlaying(true);
     };
 
     const stopAudio = () => {
@@ -64,18 +44,18 @@ const ButtonTTS: React.FC<ButtonTTSProps> = ({ text }) => {
     };
 
     return (
-        <button onClick={isPlaying ? stopAudio : fetchAndPlayAudio}>
+        <button onClick={isPlaying ? stopAudio : fetchAndPlayAudioHandler}>
             {isPlaying ? (
                 <IconPlayerStop 
                     className="text-red-500 dark:text-red-400"
                     size={20} 
                 />
-                ) : (
+            ) : (
                 <IconSpeakerphone
                     className="invisible group-hover:visible focus:visible text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                     size={20} 
                 />
-                )}
+            )}
         </button>
     );
 };

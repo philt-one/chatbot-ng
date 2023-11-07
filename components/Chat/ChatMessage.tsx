@@ -34,7 +34,7 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
   const { t } = useTranslation('chat');
 
   const {
-    state: { selectedConversation, conversations, currentMessage, messageIsStreaming },
+    state: { selectedConversation, conversations, currentMessage, messageIsStreaming, apiKey },
     dispatch: homeDispatch,
   } = useContext(HomeContext);
 
@@ -279,7 +279,7 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
               </MemoizedReactMarkdown>
 
               <div className="md:-mr-8 ml-1 md:ml-0 flex flex-col md:flex-row gap-4 md:gap-1 items-center md:items-start justify-end md:justify-start">
-                <ButtonTTS text={message.content} />
+                <ButtonTTS text={message.content} apiKey={apiKey} />
                 {messageCopied ? (
                   <IconCheck
                     size={20}

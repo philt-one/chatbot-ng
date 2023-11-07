@@ -14,6 +14,7 @@ const ButtonTTS: React.FC<ButtonTTSProps> = ({ text }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
 
+    // TODO: Get apiKey from store instead of env file
     const fetchAndPlayAudioHandler = async () => {
         const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 
@@ -22,7 +23,7 @@ const ButtonTTS: React.FC<ButtonTTSProps> = ({ text }) => {
             console.error('OPENAI_API_KEY is not set or empty in the environment variables.');
             return; // Exit the function if apiKey is not valid
         }
-        
+
         fetchAudioFromOpenAI(text, apiKey as string)
             .then(audio => {
                 if (audio) {
